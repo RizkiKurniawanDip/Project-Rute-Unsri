@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rute Kampus Unsri Indralaya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside>
+      <div class="brand">
+        <span class="logo">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#0f2557"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="6" cy="18" r="2.5" />
+            <circle cx="18" cy="6" r="2.5" />
+            <path d="M8.5 18H14a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h5.5" />
+          </svg>
+        </span>
+        <div>
+          <h1>Rute Kampus Unsri</h1>
+          <p class="sub">
+            Proyek Struktur Diskrit II: graf berbobot dan pohon merentang
+            minimum (Kruskal)
+          </p>
+        </div>
+      </div>
+
+      <section class="card">
+        <label class="t" for="org">Lokasi saya sekarang</label>
+        <select id="org"></select>
+
+        <label class="t">Tempat singgah</label>
+        <div id="stops"></div>
+        <button id="add" class="ghost">+ Tambah tempat singgah</button>
+
+        <label class="t" for="dst">Tujuan akhir</label>
+        <select id="dst"></select>
+
+        <button id="tukar" class="primary">Balik arah</button>
+      </section>
+
+      <section class="card">
+        <h3>Macet</h3>
+        <div class="tools">
+          <button id="tm">Mode macet</button>
+          <button id="contoh">Contoh macet</button>
+          <button id="clr">Hapus macet</button>
+        </div>
+        <div class="hint">
+          Klik jalan di peta: sekali untuk <b>macet ringan</b>, dua kali untuk
+          <b>macet parah</b>, tiga kali untuk <b>lancar</b> lagi.
+        </div>
+        <div class="leg">
+          <span
+            ><i style="background: #fff; border: 1px solid #b4c2de"></i
+            >Lancar</span
+          >
+          <span><i style="background: #ffc933"></i>Ringan</span>
+          <span><i style="background: #d62839"></i>Parah</span>
+        </div>
+      </section>
+
+      <div id="res"></div>
+
+      <section class="card mm">
+        <details>
+          <summary>Penjelasan singkat</summary>
+          <p>
+            <b>Graf berbobot.</b> Gedung dan persimpangan jadi simpul, ruas
+            jalan jadi sisi, dan bobot sisi = jarak piksel &times;
+            <b><span class="v-skala"></span> m/piksel</b>. Macet menambah bobot
+            ruas. Waktu dihitung dari kecepatan
+            <b><span class="v-kec"></span> m/menit</b>, jadi angkanya perkiraan.
+          </p>
+          <p>
+            <b>Pohon merentang minimum (Kruskal).</b> Pohon dibentuk hanya dari
+            titik yang dipilih (asal, singgah, tujuan). Bobot antar dua titik
+            adalah jarak terpendek di antara keduanya, termasuk macet. Pasangan
+            titik dengan bobot terkecil dimasukkan lebih dulu, kecuali kalau
+            membentuk sirkuit.
+          </p>
+          <p>
+            <b>Cara pakai.</b> Klik gedung di peta: klik ke-1 = asal, klik ke-2
+            = tujuan, <b>Shift+klik</b> = tambah singgah. Geser peta dengan
+            menyeret, perbesar dengan tombol + / &minus; atau scroll.
+          </p>
+        </details>
+      </section>
+
+      <div class="card mm" id="analisisRute"></div>
+    </aside>
+
+    <main id="wrap">
+      <svg id="map" viewBox="0 0 2300 1625" preserveAspectRatio="xMidYMid meet">
+        <polygon
+          points="150,495 795,435 900,310 990,340 1120,175 1300,175 1315,280 1440,255 1570,275 1595,165 2150,165 2180,695 2105,1125 2075,1350 1865,1375 1625,1340 1405,1340 1375,1140 825,1145 535,1035 615,725 150,655"
+          fill="#f1f5fc"
+        />
+        <g id="roads"></g>
+        <g id="tree" style="pointer-events: none"></g>
+        <g id="hits"></g>
+        <g id="route" style="pointer-events: none"></g>
+        <g id="wl" style="pointer-events: none"></g>
+        <g id="places"></g>
+        <g id="tags" style="pointer-events: none"></g>
+        <g id="bantuL" style="pointer-events: none; display: none"></g>
+      </svg>
+
+      <div class="alat">
+        <label class="sw"
+          ><input type="checkbox" id="sw" /> Tampilkan bobot ruas</label
+        >
+        <label class="sw"
+          ><input type="checkbox" id="bantu" /> Tampilkan titik
+          persimpangan</label
+        >
+        <label class="sw"
+          ><input type="checkbox" id="st" /> Tampilkan pohon merentang</label
+        >
+      </div>
+
+      <div class="legenda" aria-hidden="true">
+        <span
+          ><i style="background: #ffc933; border: 2px solid #0f2557"></i>Lokasi
+          awal</span
+        >
+        <span><i style="background: #4f7bd9"></i>Tempat singgah</span>
+        <span><i style="background: #0f2557"></i>Tujuan</span>
+      </div>
+
+      <div class="zoom">
+        <button id="zi" aria-label="Perbesar">+</button>
+        <button id="zo" aria-label="Perkecil">&minus;</button>
+        <button id="zr" aria-label="Reset">&#8634;</button>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
